@@ -10,11 +10,16 @@ models_path_parameters = _here.parent.parent / 'models' / 'parameters'
 
 class Rossmann(object):
     def __init__(self):
-        self.competition_distance_scaler = pickle.load(open(models_path_parameters / 'rs_distance.pkl',  'rb'))
-        self.competition_time_month      = pickle.load(open(models_path_parameters / 'rs_time.pkl',      'rb'))
-        self.promo_time_week             = pickle.load(open(models_path_parameters / 'mms_promo.pkl',    'rb'))
-        self.year                        = pickle.load(open(models_path_parameters / 'mms_year.pkl',     'rb'))
-        self.store_type                  = pickle.load(open(models_path_parameters / 'store_type.pkl',   'rb'))
+        with open(models_path_parameters / 'rs_distance.pkl',  'rb') as f:
+            self.competition_distance_scaler = pickle.load(f)
+        with open(models_path_parameters / 'rs_time.pkl',      'rb') as f:
+            self.competition_time_month      = pickle.load(f)
+        with open(models_path_parameters / 'mms_promo.pkl',    'rb') as f:
+            self.promo_time_week             = pickle.load(f)
+        with open(models_path_parameters / 'mms_year.pkl',     'rb') as f:
+            self.year                        = pickle.load(f)
+        with open(models_path_parameters / 'store_type.pkl',   'rb') as f:
+            self.store_type                  = pickle.load(f)
 
     def data_cleaning(self, df1):
         cols_old = ['Store', 'DayOfWeek', 'Date', 'Open', 'Promo', 'StateHoliday', 'SchoolHoliday',
@@ -27,6 +32,9 @@ class Rossmann(object):
         snakecase = lambda x: inflection.underscore(x)
         cols_new = list(map(snakecase, cols_old))
         df1.columns = cols_new
+
+        # Kaggle convention: Open=NaN means the store was open; make it explicit
+        df1['open'] = df1['open'].fillna(1).astype(int)
 
         df1['date'] = pd.to_datetime(df1['date'])
 
@@ -71,6 +79,7 @@ class Rossmann(object):
         return df1
 
     def feature_engineering(self, df2):
+        df2 = df2.copy()
         df2['year']         = df2['date'].dt.year
         df2['month']        = df2['date'].dt.month
         df2['day']          = df2['date'].dt.day
@@ -99,7 +108,8 @@ class Rossmann(object):
 
         df2 = df2[df2['open'] != 0]
 
-        cols_drop = ['open', 'promo_interval', 'month_map']
+        cols_drop = ['open', 'promo_interval', 'month_map', 'is_promo',
+                     'year_week', 'competition_since', 'promo_since']
         df2 = df2.drop(cols_drop, axis=1)
 
         return df2
@@ -149,4 +159,4 @@ class Rossmann(object):
         # Index alignment: feature_engineering may drop open=0 rows, so len(pred) <= len(original_data)
         original_data = original_data.copy()
         original_data.loc[test_data.index, 'prediction'] = np.expm1(pred)
-        return original_data.to_json(orient='records', date_format='iso')
+        return original_data[['Store', 'Date', 'prediction']].to_json(orient='records', date_format='iso')
