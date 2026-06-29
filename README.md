@@ -75,7 +75,7 @@ A solução foi estruturada em 10 etapas seguindo a metodologia **CRISP-DS**:
 | Random Forest Regressor | 837.45 ± 218.41 | 0.12 ± 0.02 | 1255.62 ± 318.34 |
 | **XGBoost Regressor** | **1076.89 ± 157.79** | **0.15 ± 0.01** | **1544.02 ± 216.12** |
 
-O XGBoost foi escolhido em detrimento do Random Forest por apresentar **menor variância no cross-validation** e ser significativamente mais leve para deploy em produção.
+O XGBoost foi escolhido em detrimento do Random Forest por apresentar **menor variância no cross-validation** e ser significativamente mais leve para deploy em produção. O delta de MAE de ~239 pontos (~28% pior) foi sacrificado conscientemente: em benchmarks locais, o XGBoost entregou **inferência ~3× mais rápida** e um modelo serializado **~10× menor** (pkl), dois requisitos críticos para uma API com timeout restrito no Heroku free tier e múltiplas requisições simultâneas vindas do bot do Telegram.
 
 ### Estrutura do Projeto
 
