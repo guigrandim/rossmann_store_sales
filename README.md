@@ -2,6 +2,10 @@
 
 Modelo de machine learning para prever as vendas das próximas 6 semanas de cada loja da rede Rossmann, com API em produção no Heroku e bot no Telegram para consulta em tempo real.
 
+<p align="center">
+<img src="./assets/img/main_project.png" alt="Visão Geral do Projeto" width="800px">
+</p>
+
 ---
 
 ## 🚨 Problema de Negócio
