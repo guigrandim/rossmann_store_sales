@@ -2,21 +2,13 @@
 
 Modelo de machine learning para prever as vendas das próximas 6 semanas de cada loja da rede Rossmann, com API em produção no Heroku e bot no Telegram para consulta em tempo real.
 
-<p align="center">
-<img src="./assets/img/mindmap_rossmann.png" alt="Mindmap do projeto Rossmann" width="800px">
-</p>
-
-<p align="center">
-<img src="./assets/img/crisp_ds.png" alt="Metodologia CRISP-DS" width="600px">
-</p>
-
 ---
 
 ## 🚨 Problema de Negócio
 
 A rede Rossmann opera mais de 1.100 farmácias na Alemanha. O CFO da empresa precisava de uma previsão confiável do faturamento de cada loja para as próximas 6 semanas, com o objetivo de planejar um orçamento centralizado para reformas e melhorias nas unidades.
 
-Até então, cada gerente de loja fornecia sua própria estimativa manualmente. Esse processo gerava previsões inconsistentes, sujeitas a vieses individuais e sem base estatística — tornando o planejamento financeiro do CFO pouco confiável.
+Até então, cada gerente de loja fornecia sua própria estimativa manualmente. Esse processo gerava previsões inconsistentes, sujeitas a erros individuais e sem base estatística, o que tornava o planejamento financeiro para o CFO pouco confiável.
 
 **Pergunta central:** Quanto cada loja vai vender nas próximas 6 semanas?
 
@@ -25,6 +17,14 @@ Até então, cada gerente de loja fornecia sua própria estimativa manualmente. 
 ## 🗺️ Planejamento da Solução
 
 A solução foi estruturada em 10 etapas seguindo a metodologia **CRISP-DS**:
+
+<p align="center">
+<img src="./assets/img/mindmap_rossmann.png" alt="Mindmap do Projeto" width="800px">
+</p>
+
+<p align="center">
+<img src="./assets/img/crisp_ds.png" alt="Metodologia CRISP-DS" width="600px">
+</p>
 
 1. **Descrição dos dados** — análise dimensional, tipagem, identificação e tratamento de valores nulos, estatística descritiva de variáveis numéricas e categóricas.
 
@@ -156,6 +156,10 @@ rossmann-store-sales API (Heroku)
     ↓ XGBoost predict
 Resposta: "Store 22 will sell R$ 173,118.88 in the next 6 weeks"
 ```
+
+<p align="center">
+<img src="./assets/img/screenshot_bot_telegram.jpeg" alt="Bot no Telegram" width="400px">
+</p>
 
 ---
 
