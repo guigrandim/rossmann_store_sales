@@ -2,9 +2,19 @@
 
 Modelo de machine learning para prever as vendas das próximas 6 semanas de cada loja da rede Rossmann, com API em produção no Heroku e bot no Telegram para consulta em tempo real.
 
+![Flask](https://img.shields.io/badge/Flask-3.1-000000?logo=flask&logoColor=white)
+![XGBoost](https://img.shields.io/badge/XGBoost-3.2-006ACC)
+![scikit--learn](https://img.shields.io/badge/scikit--learn-1.9-F7931E?logo=scikitlearn&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 <p align="center">
 <img src="./assets/img/main_project.png" alt="Visão Geral do Projeto" width="800px">
 </p>
+
+### 🎯 Destaques
+- Treinei e comparei 5 algoritmos de regressão para prever vendas de 1.115 lojas em 6 semanas, escolhendo XGBoost por entregar inferência ~3× mais rápida e um modelo ~10× menor que o Random Forest (segundo melhor MAE), viabilizando deploy em produção sob timeout restrito.
+- Entreguei a previsão como um bot de Telegram integrado a uma API Flask no Heroku, permitindo que o CFO consulte o faturamento esperado de qualquer loja em segundos, sem depender de dashboards ou planilhas.
+- Validei 12 hipóteses de negócio via EDA, com o modelo final atingindo MAPE de ~13%, substancialmente superior à estimativa manual que cada gerente de loja fazia antes.
 
 ---
 
@@ -103,6 +113,17 @@ rossmann_store_sales/
     └── requirements.txt
 ```
 
+### Como Executar Localmente
+
+```bash
+git clone https://github.com/guigrandim/rossmann_store_sales.git
+cd rossmann_store_sales/webapp
+pip install -r requirements.txt
+gunicorn handler:app
+```
+
+> O bot do Telegram (`rossmann-telegram-api/`) roda como um serviço separado e depende de um token de bot configurado como variável de ambiente — veja `rossmann-telegram-api/requirements.txt` para suas dependências.
+
 ---
 
 ## 💡 Top Insights
@@ -183,3 +204,14 @@ A integração via Telegram permite que o CFO consulte a previsão de qualquer l
 ---
 
 *📁 Dados: Rossmann Store Sales (Kaggle) · 🏪 1.115 lojas · 🤖 XGBoost · 🚀 Heroku + Telegram*
+
+## 🧰 Skills Demonstradas
+
+- **Machine Learning:** treinamento e avaliação comparativa de 5 algoritmos de regressão, cross-validation temporal, fine tuning via Random Search.
+- **Feature Engineering:** encoding cíclico de variáveis temporais, derivação de variáveis de negócio (`competition_time_month`, `promo_time_week`), seleção de features via Boruta.
+- **Engenharia de deploy:** trade-off consciente de acurácia por latência/tamanho de modelo para viabilizar produção sob timeout restrito no Heroku free tier.
+- **Comunicação executiva:** tradução de métricas de erro (MAE/MAPE/RMSE) em cenários financeiros (pessimista/esperado/otimista) para consumo direto pelo CFO.
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT — veja [LICENSE](./LICENSE) para detalhes.
