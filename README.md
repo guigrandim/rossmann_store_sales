@@ -215,3 +215,6 @@ A integração via Telegram permite que o CFO consulte a previsão de qualquer l
 ## 📄 Licença
 
 Este projeto está sob a licença MIT — veja [LICENSE](./LICENSE) para detalhes.
+
+
+<!-- cache refresh Fri, Jul 10, 2026  7:28:05 PM -->
