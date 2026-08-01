@@ -14,6 +14,7 @@ if 'store_df' not in globals():
     store_df = main_path / "assets" / "data" / "store.csv"
 
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
+PREDICT_API_URL = os.environ.get('PREDICT_API_URL', 'https://rossmann-store-sales-3eed298e1c78.herokuapp.com/rossmann/predict')
 
 def send_message(chat_id, text):
     url = 'https://api.telegram.org/bot{}/sendMessage'.format(TOKEN)
@@ -48,9 +49,7 @@ def load_dataset (store_id):
 
 def predict(data):
     # API Call
-    url = "https://rossmann-store-sales-3eed298e1c78.herokuapp.com/rossmann/predict"
-
-    r = requests.post(url, data=data, headers={"Content-Type": "application/json"})
+    r = requests.post(PREDICT_API_URL, data=data, headers={"Content-Type": "application/json"})
     print("Status Code {}".format(r.status_code))
     if r.status_code != 200:
         print("Response:", r.text[:500])
