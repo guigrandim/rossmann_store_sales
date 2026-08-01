@@ -1,6 +1,6 @@
 # 🏪 Rossmann Store Sales — Previsão de Vendas
 
-Modelo de machine learning para prever as vendas das próximas 6 semanas de cada loja da rede Rossmann, com API em produção no Heroku e bot no Telegram para consulta em tempo real.
+Modelo de machine learning para prever as vendas das próximas 6 semanas de cada loja da rede Rossmann, com API em produção no Render e bot no Telegram para consulta em tempo real.
 
 ![Flask](https://img.shields.io/badge/Flask-3.1-000000?logo=flask&logoColor=white)
 ![XGBoost](https://img.shields.io/badge/XGBoost-3.2-006ACC)
@@ -13,7 +13,7 @@ Modelo de machine learning para prever as vendas das próximas 6 semanas de cada
 
 ### 🎯 Destaques
 - Treinei e comparei 5 algoritmos de regressão para prever vendas de 1.115 lojas em 6 semanas, escolhendo XGBoost por entregar inferência ~3× mais rápida e um modelo ~10× menor que o Random Forest (segundo melhor MAE), viabilizando deploy em produção sob timeout restrito.
-- Entreguei a previsão como um bot de Telegram integrado a uma API Flask no Heroku, permitindo que o CFO consulte o faturamento esperado de qualquer loja em segundos, sem depender de dashboards ou planilhas.
+- Entreguei a previsão como um bot de Telegram integrado a uma API Flask no Render, permitindo que o CFO consulte o faturamento esperado de qualquer loja em segundos, sem depender de dashboards ou planilhas.
 - Validei 12 hipóteses de negócio via EDA, com o modelo final atingindo MAPE de ~13%, substancialmente superior à estimativa manual que cada gerente de loja fazia antes.
 
 ---
@@ -58,9 +58,9 @@ A solução foi estruturada em 10 etapas seguindo a metodologia **CRISP-DS**:
 
 9. **Tradução do erro** — conversão das métricas de erro em cenários financeiros (pessimista, esperado, otimista) por loja.
 
-10. **Deploy em produção** — API Flask no Heroku + bot no Telegram para consulta pelo CFO.
+10. **Deploy em produção** — API Flask no Render + bot no Telegram para consulta pelo CFO.
 
-**Ferramentas:** Python (pandas, numpy, scikit-learn, XGBoost, Flask), Heroku, Telegram Bot API.
+**Ferramentas:** Python (pandas, numpy, scikit-learn, XGBoost, Flask), Render, Telegram Bot API.
 
 ---
 
@@ -85,7 +85,7 @@ A solução foi estruturada em 10 etapas seguindo a metodologia **CRISP-DS**:
 | Random Forest Regressor | 837.45 ± 218.41 | 0.12 ± 0.02 | 1255.62 ± 318.34 |
 | **XGBoost Regressor** | **1076.89 ± 157.79** | **0.15 ± 0.01** | **1544.02 ± 216.12** |
 
-O XGBoost foi escolhido em detrimento do Random Forest por apresentar **menor variância no cross-validation** e ser significativamente mais leve para deploy em produção. O delta de MAE de ~239 pontos (~28% pior) foi sacrificado conscientemente: em benchmarks locais, o XGBoost entregou **inferência ~3× mais rápida** e um modelo serializado **~10× menor** (pkl), dois requisitos críticos para uma API com timeout restrito no Heroku free tier e múltiplas requisições simultâneas vindas do bot do Telegram.
+O XGBoost foi escolhido em detrimento do Random Forest por apresentar **menor variância no cross-validation** e ser significativamente mais leve para deploy em produção. O delta de MAE de ~239 pontos (~28% pior) foi sacrificado conscientemente: em benchmarks locais, o XGBoost entregou **inferência ~3× mais rápida** e um modelo serializado **~10× menor** (pkl), dois requisitos críticos para uma API com timeout restrito no free tier do Render e múltiplas requisições simultâneas vindas do bot do Telegram.
 
 ### Estrutura do Projeto
 
@@ -102,12 +102,12 @@ rossmann_store_sales/
 │   └── parameters/
 ├── notebooks/
 │   └── datasets_analysis.ipynb
-├── webapp/                          # API Flask (Heroku)
+├── webapp/                          # API Flask (Render)
 │   ├── handler.py
 │   ├── rossmann/Rossmann.py
 │   ├── Procfile
 │   └── requirements.txt
-└── rossmann-telegram-api/           # Bot Telegram (Heroku)
+└── rossmann-telegram-api/           # Bot Telegram (Render)
     ├── rossmann-bot.py
     ├── Procfile
     └── requirements.txt
@@ -122,7 +122,7 @@ pip install -r requirements.txt
 gunicorn handler:app
 ```
 
-> O bot do Telegram (`rossmann-telegram-api/`) roda como um serviço separado e depende de um token de bot configurado como variável de ambiente — veja `rossmann-telegram-api/requirements.txt` para suas dependências.
+> O bot do Telegram (`rossmann-telegram-api/`) roda como um serviço separado e depende de duas variáveis de ambiente: `TELEGRAM_TOKEN` (token do bot) e `PREDICT_API_URL` (URL da API de predição) — veja `rossmann-telegram-api/requirements.txt` para suas dependências.
 
 ---
 
@@ -175,9 +175,9 @@ gunicorn handler:app
 ```
 Usuário (Telegram)
     ↓ /22 (número da loja)
-rossmann-telegram-bot (Heroku)
+rossmann-telegram-bot (Render)
     ↓ POST /rossmann/predict
-rossmann-store-sales API (Heroku)
+rossmann-store-sales API (Render)
     ↓ XGBoost predict
 Resposta: "Store 22 will sell R$ 173,118.88 in the next 6 weeks"
 ```
@@ -203,13 +203,13 @@ A integração via Telegram permite que o CFO consulte a previsão de qualquer l
 
 ---
 
-*📁 Dados: Rossmann Store Sales (Kaggle) · 🏪 1.115 lojas · 🤖 XGBoost · 🚀 Heroku + Telegram*
+*📁 Dados: Rossmann Store Sales (Kaggle) · 🏪 1.115 lojas · 🤖 XGBoost · 🚀 Render + Telegram*
 
 ## 🧰 Skills Demonstradas
 
 - **Machine Learning:** treinamento e avaliação comparativa de 5 algoritmos de regressão, cross-validation temporal, fine tuning via Random Search.
 - **Feature Engineering:** encoding cíclico de variáveis temporais, derivação de variáveis de negócio (`competition_time_month`, `promo_time_week`), seleção de features via Boruta.
-- **Engenharia de deploy:** trade-off consciente de acurácia por latência/tamanho de modelo para viabilizar produção sob timeout restrito no Heroku free tier.
+- **Engenharia de deploy:** trade-off consciente de acurácia por latência/tamanho de modelo para viabilizar produção sob timeout restrito no free tier do Render.
 - **Comunicação executiva:** tradução de métricas de erro (MAE/MAPE/RMSE) em cenários financeiros (pessimista/esperado/otimista) para consumo direto pelo CFO.
 
 ## 📄 Licença
