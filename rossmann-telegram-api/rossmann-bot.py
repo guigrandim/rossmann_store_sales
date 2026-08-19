@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import time
 import pandas as pd
 from pathlib import Path
 from flask import Flask, request, Response
@@ -48,11 +49,18 @@ def load_dataset (store_id):
     return data
 
 def predict(data):
-    # API Call
-    r = requests.post(PREDICT_API_URL, data=data, headers={"Content-Type": "application/json"})
-    print("Status Code {}".format(r.status_code))
-    if r.status_code != 200:
+    # API Call. On Render's free tier the predict service may be asleep and
+    # answers with a non-JSON 429/502 page instead of queuing the request,
+    # so retry with backoff instead of crashing on r.json().
+    for attempt in range(6):
+        r = requests.post(PREDICT_API_URL, data=data, headers={"Content-Type": "application/json"}, timeout=30)
+        print("Status Code {}".format(r.status_code))
+        if r.status_code == 200:
+            break
         print("Response:", r.text[:500])
+        time.sleep(8)
+    else:
+        return None
 
     response_data = r.json()
     print("Records returned:", len(response_data))
@@ -95,7 +103,11 @@ def index():
             if data != 'error':
                 #prediction
                 d1 = predict(data)
-                
+
+                if d1 is None:
+                    send_message(chat_id, 'Prediction service is still waking up, please try again in a moment.')
+                    return Response('Ok', status=200)
+
                 #calculation
                 store_col = "Store" if "Store" in d1.columns else "store"
                 df2 = d1[[store_col, "prediction"]].groupby(store_col).sum().reset_index()
